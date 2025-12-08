@@ -47,3 +47,43 @@ The goal of Week 1 was to establish the project structure, define core database 
 
 Implement authentication serializers, views, and URL patterns for user registration and login endpoints.
 
+---
+
+## 🔒 Week 2: User Implementation & Authentication
+
+The primary goal of Week 2 was to implement secure token-based user authentication and management endpoints.
+
+### Key Deliverables:
+
+* **Custom User Model Ready:** Confirmed `AUTH_USER_MODEL = 'users.User'` setup in `settings.py`.
+* **Authentication Setup:** Integrated `rest_framework.authtoken` and configured `TokenAuthentication` as the default method.
+* **User Serializers:** Created `UserRegistrationSerializer`, `UserLoginSerializer`, and `UserSerializer` for data validation and profile representation.
+* **Authentication Endpoints:** Implemented the following core API views:
+    * **POST `/api/users/register/`**: Creates a new user and hashes the password.
+    * **POST `/api/users/login/`**: Authenticates credentials and issues a unique `Token`.
+    * **GET/PUT/DELETE `/api/users/me/`**: Allows authenticated users to view, update, or delete their own profile.
+* **URL Routing:** Defined and included all user authentication endpoints under the `/api/users/` path.
+* **Fixes:** Resolved the `ModuleNotFoundError: No module named 'products.urls'` by creating a placeholder file and the middleware typo in `settings.py`.
+
+---
+
+## 📦 Week 3: Product Core (CRUD & Search)
+
+The focus of Week 3 was building the core E-commerce functionality for managing the product inventory.
+
+### Key Deliverables:
+
+* **Product Serializer:** Created `ProductSerializer` to handle CRUD operations and validate product attributes (Name, Price, Stock Quantity, etc.). Includes a read-only field for the `created_by_username`.
+* **Product CRUD Views:** Implemented **Generic Views** for product management:
+    * **GET/POST `/api/products/products/`**: List all products (GET) or create a new product (POST).
+    * **GET/PUT/DELETE `/api/products/products/<id>/`**: Retrieve, update, or delete a single product.
+* **Authorization Logic:** Implemented a custom permission class, **`IsStaffOrReadOnly`**, to enforce the following rule:
+    * **Read (GET)** operations are **publicly accessible**.
+    * **Write (POST, PUT, DELETE)** operations are restricted to authenticated users with `is_staff = True`.
+* **Basic Search Functionality:** Implemented a `ProductSearchView` mapped to **`api/products/products/search/`** allowing search by `name__icontains` or `category__iexact`.
+* **Model Integrity:** Ensured the `created_by` Foreign Key is automatically set to the authenticated user during product creation using `perform_create`.
+
+### Next Steps (Week 4 Focus)
+
+Enhance product listing and search endpoints with pagination, advanced filtering options (`price range`, `stock availability`), and implement full error handling.
+
