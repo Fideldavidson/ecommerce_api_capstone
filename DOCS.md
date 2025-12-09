@@ -35,3 +35,48 @@ The core `config/settings.py` file establishes:
 * **Default Authentication:** `DEFAULT_AUTHENTICATION_CLASSES` set to include `TokenAuthentication`.
 * **Pagination:** `DEFAULT_PAGINATION_CLASS` set to `PageNumberPagination` with a default `PAGE_SIZE: 10`.
 
+
+# ---
+
+## Week 2: User Implementation & Authentication
+
+### 1. Configuration Changes
+* **Authentication Setup:** Added `'rest_framework.authtoken'` to `INSTALLED_APPS` to enable Token-based Authentication.
+* **Middleware Fix:** Corrected the typo in `MIDDLEWARE` from `CsrFViewMiddleware` to the correct `CsrfViewMiddleware`.
+
+### 2. User Serializers (`users/serializers.py`)
+* **Registration:** `UserRegistrationSerializer` uses `create_user` method to handle password hashing, ensuring security.
+* **Login:** `UserLoginSerializer` uses `authenticate()` for credential verification and raises a validation error on failure.
+* **Profile:** `UserSerializer` is read/write for `username` and `email`, used for the `/me/` endpoint.
+
+### 3. User Views & Endpoints (`users/views.py`)
+* **Registration (`UserRegisterView`):** Uses `generics.CreateAPIView`. Allows any user access (`permissions.AllowAny`).
+* **Login (`UserLoginView`):** Uses `APIView`. On successful authentication, it uses `Token.objects.get_or_create()` to issue a persistent token key.
+* **Profile (`UserDetailView`):** Uses `generics.RetrieveUpdateDestroyAPIView`. Requires `permissions.IsAuthenticated` and uses `self.request.user` to scope the queryset, ensuring users only access their own data.
+
+# ---
+
+## Week 3: Product Core (CRUD & Search)
+
+### 1. Product Model Enhancement (`products/models.py`)
+* The relationship field `created_by` is a `ForeignKey` to `settings.AUTH_USER_MODEL`. This enforces data integrity by ensuring every product has an associated creator.
+
+### 2. Custom Permissions (`products/permissions.py`)
+* **Permission Class:** `IsStaffOrReadOnly` was created to enforce business logic:
+    * It checks if the `request.method` is in `permissions.SAFE_METHODS` (GET, HEAD, OPTIONS) to allow public read access.
+    * Otherwise, it requires the user to be both authenticated and have `is_staff=True` to proceed with write operations (POST, PUT, DELETE).
+
+### 3. Product Serializer (`products/serializers.py`)
+* The serializer includes `created_by_username` as a `ReadOnlyField(source='created_by.username')` for clear data representation without exposing the internal Foreign Key ID.
+
+### 4. Product Views & Endpoints (`products/views.py`)
+* **List/Create (`ProductListCreateView`):**
+    * Uses `generics.ListCreateAPIView` with `IsStaffOrReadOnly` permissions.
+    * The `perform_create` method is overridden to automatically set the `created_by` field to `self.request.user`.
+* **Detail/CRUD (`ProductDetailView`):** Uses `generics.RetrieveUpdateDestroyAPIView` with `IsStaffOrReadOnly` permissions.
+* **Basic Search (`ProductSearchView`):**
+    * Uses `generics.ListAPIView` (publicly accessible).
+    * The `get_queryset` method handles filtering:
+        * Partial matching on name using `name__icontains`.
+        * Exact matching on category using `category__iexact`.
+
