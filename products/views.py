@@ -1,55 +1,92 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, filters
+from django.db.models import Q # For complex queries like OR/AND
 from .models import Product
 from .serializers import ProductSerializer
 from .permissions import IsStaffOrReadOnly
 
-class ProductListCreateView(generics.ListCreateAPIView):
+class ProductFilterMixin:
+    """Mixin to handle advanced filtering logic (Price Range, Stock)"""
+    def get_queryset(self):
+        queryset = Product.objects.all()
+        params = self.request.query_params
+
+        # --- 1. Price Range Filtering ---
+        min_price = params.get('min_price')
+        max_price = params.get('max_price')
+
+        if min_price:
+            try:
+                queryset = queryset.filter(price__gte=float(min_price))
+            except ValueError:
+                # Handled by DRF or front-end validation, but robust
+                pass
+        
+        if max_price:
+            try:
+                queryset = queryset.filter(price__lte=float(max_price))
+            except ValueError:
+                pass
+
+        # --- 2. Stock Availability Filtering ---
+        stock_status = params.get('stock_status')
+        if stock_status:
+            if stock_status.lower() == 'in_stock':
+                queryset = queryset.filter(stock_quantity__gt=0)
+            elif stock_status.lower() == 'out_of_stock':
+                queryset = queryset.filter(stock_quantity=0)
+        
+        return queryset
+
+
+class ProductListCreateView(ProductFilterMixin, generics.ListCreateAPIView):
     """
-    GET /api/products/  -> List all products (public)
-    POST /api/products/ -> Create a new product (staff/admin only)
+    GET /api/products/products/  -> List products with Pagination/Filtering (public)
+    POST /api/products/products/ -> Create a new product (staff/admin only)
     """
-    queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    # Custom permission: Staff users can write (POST), anyone can read (GET)
     permission_classes = [IsStaffOrReadOnly] 
     
-    # Override perform_create to automatically set the creator
+    # The queryset is now handled by ProductFilterMixin's get_queryset method
+
     def perform_create(self, serializer):
-        # The 'created_by' field is set to the currently authenticated user
+        # Automatically set the creator
         serializer.save(created_by=self.request.user)
 
 
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
-    GET /api/products/<id>/    -> Retrieve single product (public)
-    PUT/PATCH /api/products/<id>/ -> Update product (staff/admin only)
-    DELETE /api/products/<id>/  -> Delete product (staff/admin only)
+    GET /api/products/products/<id>/    -> Retrieve single product (public)
+    PUT/PATCH /api/products/products/<id>/ -> Update product (staff/admin only)
+    DELETE /api/products/products/<id>/  -> Delete product (staff/admin only)
     """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsStaffOrReadOnly]
-    lookup_field = 'id' # Use 'id' for clean URLs
+    lookup_field = 'id'
 
 
 class ProductSearchView(generics.ListAPIView):
     """
-    GET /api/products/search/?name=...&category=...
-    Endpoint for searching products by name or category.
+    GET /api/products/products/search/?name=...&category=...
+    Endpoint for searching products by name or category, now integrated with Pagination.
     """
     serializer_class = ProductSerializer
-    permission_classes = [permissions.AllowAny] # Publicly accessible
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         queryset = Product.objects.all()
         name = self.request.query_params.get('name', None)
         category = self.request.query_params.get('category', None)
         
-        # Search by partial match (icontains)
+        # Build Q object for combining search criteria (OR)
+        search_filter = Q()
+        
+        # Search by partial name match
         if name:
-            queryset = queryset.filter(name__icontains=name)
+            search_filter |= Q(name__icontains=name)
         
         # Search by exact category match
         if category:
-            queryset = queryset.filter(category__iexact=category)
+            search_filter |= Q(category__iexact=category)
             
-        return queryset.distinct()
+        return queryset.filter(search_filter).distinct()

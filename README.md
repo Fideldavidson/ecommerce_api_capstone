@@ -87,3 +87,23 @@ The focus of Week 3 was building the core E-commerce functionality for managing 
 
 Enhance product listing and search endpoints with pagination, advanced filtering options (`price range`, `stock availability`), and implement full error handling.
 
+
+### 📈 Week 4: Optimization & Enhancement
+
+The focus of Week 4 was optimizing data retrieval for scalability and user experience by implementing advanced filtering and confirming pagination.
+
+| Deliverable | Description | Endpoint |
+| :--- | :--- | :--- |
+| **Advanced Filtering** | Implemented a **`ProductFilterMixin`** to allow querying products by three new parameters: **Price Range** (`min_price`/ `max_price`), and **Stock Availability** (`in_stock`/`out_of_stock`). | `GET /api/products/products/` |
+| **Pagination Confirmation** | Confirmed that DRF's **PageNumberPagination** (set to 10 items per page) is active on all product listing and search endpoints, ensuring high performance for large datasets. | `GET /api/products/products/` |
+| **Search Enhancement** | Integrated filtering logic into the list view to allow complex querying (e.g., filtering by stock AND price range). | `GET /api/products/products/search/` |
+| **URL Fix** | Updated `config/urls.py` with a `RedirectView` to send root path visitors (`/`) directly to the main API endpoint, resolving the initial 404 error. | `GET /` |
+
+---
+
+## 🛑 Project Status & Next Steps (Week 5 Focus)
+
+All core functional and technical requirements (User Auth, Product CRUD, Search, Filtering, Pagination) are now **functionally complete**.
+
+The remaining phase, **Week 5**, is dedicated to non-functional requirements vital for production quality: **Testing**, **Error Handling**, and **Documentation**.
+
