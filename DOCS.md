@@ -80,3 +80,26 @@ The core `config/settings.py` file establishes:
         * Partial matching on name using `name__icontains`.
         * Exact matching on category using `category__iexact`.
 
+
+# ---
+
+## Week 4: Optimization & Enhancement
+
+### 1. Advanced Filtering Logic (`products/views.py`)
+* **Decoupling Filters:** Implemented `ProductFilterMixin` to separate the advanced querying logic from the main view class (`ProductListCreateView`). This promotes code reusability and clean architecture. 
+* **Price Range:** Filtering is implemented using two query parameters (`min_price` and `max_price`) utilizing Django ORM lookups:
+    * `price__gte=float(min_price)`
+    * `price__lte=float(max_price)`
+* **Stock Availability:** Filtering is handled via the `stock_status` parameter, mapping string inputs to specific database lookups:
+    * 'in\_stock' maps to `stock_quantity__gt=0`
+    * 'out\_of\_stock' maps to `stock_quantity=0`
+
+### 2. Search Enhancement (`ProductSearchView`)
+* The search logic was maintained, but the use of the `Q` object from `django.db.models` was confirmed to allow **OR** logic in combined search queries (e.g., matching a product by Name *OR* by Category).
+
+### 3. Pagination Confirmation
+* Pagination, configured globally in `settings.py` (likely using `PageNumberPagination`), is now active on both `ProductListCreateView` and `ProductSearchView` by default, ensuring efficient handling of large datasets.
+
+### 4. URL Fix for Development
+* The root URL (`/`) in `config/urls.py` was fixed by adding a `RedirectView` to `api/products/products/`. This is a practical fix for the headless API environment, providing immediate feedback to developers accessing the base server address.
+
