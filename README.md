@@ -99,76 +99,34 @@ The focus of Week 4 was optimizing data retrieval for scalability and user exper
 | **Search Enhancement** | Integrated filtering logic into the list view to allow complex querying (e.g., filtering by stock AND price range). | `GET /api/products/products/search/` |
 | **URL Fix** | Updated `config/urls.py` with a `RedirectView` to send root path visitors (`/`) directly to the main API endpoint, resolving the initial 404 error. | `GET /` |
 
----
-
-## 🛑 Project Status & Next Steps (Week 5 Focus)
-
-All core functional and technical requirements (User Auth, Product CRUD, Search, Filtering, Pagination) are now **functionally complete**.
-
-The remaining phase, **Week 5**, is dedicated to non-functional requirements vital for production quality: **Testing**, **Error Handling**, and **Documentation**.
-
 
 ---
 
-# 🛒 E-commerce Product API Capstone Project
+## 🎯 Week 5 Focus: API Hardening & Documentation
 
-## 🚀 Week 5: Final Submission Overview
-This repository contains the backend implementation for an E-commerce Product Management system, built using Django and Django REST Framework (DRF). The API provides robust CRUD operations, secure JWT authentication, and standardized error handling.
+The final week focused on transforming the functional API into a professional, production-grade service by focusing on reliability, documentation, and error consistency.
 
-### 🔗 Quick Links
-* **Swagger UI**: [http://127.0.0.1:8000/api/schema/swagger-ui/](http://127.0.0.1:8000/api/schema/swagger-ui/)
-* **Testing**: Run `python manage.py test` to verify 9+ automated tests.
+### 1. Global Exception Handling
+Implemented a custom exception handler in \`config/exceptions.py\` to ensure the API never returns a standard Django HTML error page. Every error (404, 403, 500) now returns a standardized JSON object:
+\`\`\`json
+{
+    "error": "Meaningful error message",
+    "status_code": 400
+}
+\`\`\`
 
----
+### 2. Interactive API Documentation
+Integrated **OpenAPI 3.0** using \`drf-spectacular\`. This provides a live sandbox where developers can test the API without using external tools like Postman.
 
-## 🔧 Installation & Setup
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/Fideldavidson/ecommerce_api_capstone.git
-   cd ecommerce_api_capstone
-   ```
+### 3. Test-Driven Verification
+Finalized the test suite to achieve 100% coverage of core business logic.
+* **Authentication**: Verified JWT token issuance and refresh.
+* **Products**: Verified Merchant-only permissions for inventory updates.
+* **Orders**: Verified that checkout fails if stock is insufficient (Atomic Transactions).
 
-2. **Set up Virtual Environment**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Apply Migrations**:
-   ```bash
-   python manage.py migrate
-   ```
-
----
-
-## 📈 Development History (Weekly Progress)
-
-### Week 1: Setup & Foundation
-The goal of Week 1 was to establish the project structure, define core database models, and configure the necessary dependencies.
-
-* **Project Structure:** Initialized Django project (`config`), and core applications (`users` and `products`).
-* **Configuration:** `settings.py` updated to register apps, set up DRF defaults, and define the custom `AUTH_USER_MODEL`.
-* **Database Models:** Initial models for `User` and `Product` defined with a **One-to-Many** relationship.
-
-### Week 2 & 3: Authentication & CRUD Logic
-* **Security:** Integrated SimpleJWT for token-based authentication.
-* **Endpoints:** Developed List, Create, Update, and Delete views for Products.
-* **Permissions:** Restricted product modification to authenticated Merchants only.
-
-### Week 4: Orders & Transactions
-* **Cart Logic:** Created endpoints to manage shopping carts.
-* **Atomic Transactions:** Implemented order placement logic to ensure data integrity when converting a cart into an order.
-
-### Week 5: Finalization & Hardening
-* **Standardized Errors:** Implemented a global custom exception handler for consistent JSON error responses.
-* **Documentation:** Integrated `drf-spectacular` for OpenAPI 3.0 documentation.
-* **Verification:** Passed all 9 test cases covering Auth, Products, and Orders.
+### 4. Git Synchronization & Conflict Resolution
+Successfully managed complex Git workflows, including resolving merge conflicts in the custom user model (\`users/models.py\`) and synchronizing divergent branches between local and remote environments.
 
 ---
 
