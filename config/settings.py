@@ -103,3 +103,12 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "EXCEPTION_HANDLER": "config.exceptions.custom_exception_handler",
 }
+
+# DRF Spectacular Settings for API Documentation
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'E-commerce Product API',
+    'DESCRIPTION': 'Final Capstone Project',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
+
