@@ -78,15 +78,23 @@ class ProductSearchView(generics.ListAPIView):
         name = self.request.query_params.get('name', None)
         category = self.request.query_params.get('category', None)
         
-        # Build Q object for combining search criteria (OR)
-        search_filter = Q()
+        # If no search params, return nothing (or all? User didn't specify, but search usually requires query)
+        # Assuming return all if no query, or handle logic.
+        # But for 'search' endpoint, usually if no params, we might return all or none.
+        # Given lines 80-92, it was intending to return filtered list.
         
-        # Search by partial name match
+        if not name and not category:
+            return queryset # Return all if no params
+
+        search_filter = Q()
+        has_filter = False
+
         if name:
             search_filter |= Q(name__icontains=name)
+            has_filter = True
         
-        # Search by exact category match
         if category:
             search_filter |= Q(category__iexact=category)
+            has_filter = True
             
         return queryset.filter(search_filter).distinct()
