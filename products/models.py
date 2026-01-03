@@ -1,5 +1,6 @@
 from django.db import models
-from django.conf import settings # Import settings to reference AUTH_USER_MODEL
+from django.conf import settings  # Import settings to reference AUTH_USER_MODEL
+
 
 class Product(models.Model):
     # Product attributes
@@ -14,7 +15,7 @@ class Product(models.Model):
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='products',
+        related_name="products",
         # This is your FK to User.id
     )
 
@@ -23,7 +24,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
         verbose_name_plural = "Products"
 
     def __str__(self):
