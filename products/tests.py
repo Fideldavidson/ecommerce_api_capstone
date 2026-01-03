@@ -52,6 +52,45 @@ class ProductAPITests(APITestCase):
         self.assertEqual(response.data["status_code"], 403)
         self.assertIn("message", response.data)
 
+        self.assertIn("message", response.data)
+
+    def test_filter_min_price(self):
+        """Test filtering products by minimum price."""
+        # Create an expensive product
+        Product.objects.create(
+            name="Expensive Laptop",
+            price=1500.00,
+            category="Electronics",
+            stock_quantity=5,
+            created_by=self.staff_user
+        )
+        # Create a cheap product
+        Product.objects.create(
+            name="Cheap Cable",
+            price=10.00,
+            category="Electronics",
+            stock_quantity=50,
+            created_by=self.staff_user
+        )
+        
+        # Test min_price=100 (should include Laptop, exclude Cable)
+        # We need to use 'product-list-create' for filtering if search is usually there, 
+        # BUT 'ProductListCreateView' uses 'ProductFilterMixin' which has the filter logic.
+        url = reverse("product-list-create") + "?min_price=100"
+        
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        # We expect 2 products >= 100? No, UniqueTestMouse is 50. Cheap Cable is 10. Expensive Laptop is 1500.
+        # Only Expensive Laptop matches.
+        
+        if "results" in response.data:
+             self.assertEqual(len(response.data["results"]), 1)
+             self.assertEqual(response.data["results"][0]["name"], "Expensive Laptop")
+        else:
+             self.assertEqual(len(response.data), 1)
+             self.assertEqual(response.data[0]["name"], "Expensive Laptop")
+
     def test_create_product(self):
         """Ensure a staff user can create a product."""
         self.client.force_authenticate(user=self.staff_user)

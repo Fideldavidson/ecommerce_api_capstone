@@ -18,7 +18,10 @@ class UserAuthTests(APITestCase):
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(User.objects.count(), 1)
-        self.assertEqual(User.objects.get().username, "newuser")
+        new_user = User.objects.get()
+        self.assertEqual(new_user.username, "newuser")
+        self.assertNotEqual(new_user.password, "password123")
+        self.assertTrue(new_user.check_password("password123"))
 
     def test_login(self):
         """Test user login."""
