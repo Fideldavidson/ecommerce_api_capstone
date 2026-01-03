@@ -107,3 +107,73 @@ All core functional and technical requirements (User Auth, Product CRUD, Search,
 
 The remaining phase, **Week 5**, is dedicated to non-functional requirements vital for production quality: **Testing**, **Error Handling**, and **Documentation**.
 
+
+---
+
+# 🛒 E-commerce Product API Capstone Project
+
+## 🚀 Week 5: Final Submission Overview
+This repository contains the backend implementation for an E-commerce Product Management system, built using Django and Django REST Framework (DRF). The API provides robust CRUD operations, secure JWT authentication, and standardized error handling.
+
+### 🔗 Quick Links
+* **Swagger UI**: [http://127.0.0.1:8000/api/schema/swagger-ui/](http://127.0.0.1:8000/api/schema/swagger-ui/)
+* **Testing**: Run `python manage.py test` to verify 9+ automated tests.
+
+---
+
+## 🔧 Installation & Setup
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Fideldavidson/ecommerce_api_capstone.git
+   cd ecommerce_api_capstone
+   ```
+
+2. **Set up Virtual Environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Apply Migrations**:
+   ```bash
+   python manage.py migrate
+   ```
+
+---
+
+## 📈 Development History (Weekly Progress)
+
+### Week 1: Setup & Foundation
+The goal of Week 1 was to establish the project structure, define core database models, and configure the necessary dependencies.
+
+* **Project Structure:** Initialized Django project (`config`), and core applications (`users` and `products`).
+* **Configuration:** `settings.py` updated to register apps, set up DRF defaults, and define the custom `AUTH_USER_MODEL`.
+* **Database Models:** Initial models for `User` and `Product` defined with a **One-to-Many** relationship.
+
+### Week 2 & 3: Authentication & CRUD Logic
+* **Security:** Integrated SimpleJWT for token-based authentication.
+* **Endpoints:** Developed List, Create, Update, and Delete views for Products.
+* **Permissions:** Restricted product modification to authenticated Merchants only.
+
+### Week 4: Orders & Transactions
+* **Cart Logic:** Created endpoints to manage shopping carts.
+* **Atomic Transactions:** Implemented order placement logic to ensure data integrity when converting a cart into an order.
+
+### Week 5: Finalization & Hardening
+* **Standardized Errors:** Implemented a global custom exception handler for consistent JSON error responses.
+* **Documentation:** Integrated `drf-spectacular` for OpenAPI 3.0 documentation.
+* **Verification:** Passed all 9 test cases covering Auth, Products, and Orders.
+
+---
+
+## 📁 Project Structure
+* `users/`: Custom user models and authentication logic.
+* `products/`: Product management and category filtering.
+* `orders/`: Shopping cart and order processing logic.
+* `config/`: Global settings, custom exception handlers, and URL routing.
