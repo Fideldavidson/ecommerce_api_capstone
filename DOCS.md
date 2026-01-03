@@ -103,3 +103,34 @@ The core `config/settings.py` file establishes:
 ### 4. URL Fix for Development
 * The root URL (`/`) in `config/urls.py` was fixed by adding a `RedirectView` to `api/products/products/`. This is a practical fix for the headless API environment, providing immediate feedback to developers accessing the base server address.
 
+
+---
+
+# 🛠️ Week 5 Technical Documentation: Hardening & Schema
+
+## 1. Global Exception Mapping
+To maintain a professional API contract, we moved away from Django's default error handling.
+
+**Implementation:**
+- **File**: `config/exceptions.py`
+- **Logic**: The handler intercepts DRF exceptions, extracts the detail message, and wraps it in a consistent JSON structure.
+- **Registration**: Added to `REST_FRAMEWORK` settings under `EXCEPTION_HANDLER`.
+
+
+
+## 2. OpenAPI 3.0 Integration (drf-spectacular)
+We transitioned to `drf-spectacular` for better support of modern API features like JWT authentication and complex serializers.
+
+- **Schema Endpoint**: `/api/schema/` (Returns the raw YAML/JSON).
+- **UI Interaction**: Using `SpectacularSwaggerView`, the API provides an interactive testing suite that respects our JWT auth headers.
+
+## 3. Final Security Audit
+- **JWT Expiration**: Configured token lifetimes in `settings.py`.
+- **Permission Classes**: Verified that `IsAuthenticated` and custom `IsMerchant` permissions are correctly applied to the Product and Order endpoints.
+
+## 4. Final Test Suite Results
+Total Tests: 9
+- **Authentication**: 3 (Login, Refresh, Unauthorized Access)
+- **Products**: 3 (List, Create by Merchant, Update by Non-Merchant)
+- **Orders**: 3 (Cart addition, Order creation, Stock validation)
+Status: **PASSED**
